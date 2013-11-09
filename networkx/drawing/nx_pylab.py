@@ -568,43 +568,16 @@ def draw_networkx_edges(G, pos,
 
     if G.is_directed() and arrows:
 
-        # a directed graph hack
-        # draw thick line segments at head end of edge
-        # waiting for someone else to implement arrows that will work
         arrow_colors = edge_colors
         a_pos = []
-        p = 1.0-0.25  # make head segment 25 percent of edge length
         for src, dst in edge_pos:
             x1, y1 = src
             x2, y2 = dst
             dx = x2-x1   # x offset
             dy = y2-y1   # y offset
-            d = numpy.sqrt(float(dx**2 + dy**2))  # length of edge
-            if d == 0:   # source and target at same position
+            if dx == 0 and dy == 0:   # source and target at same position
                 continue
-            if dx == 0:  # vertical edge
-                xa = x2
-                ya = dy*p+y1
-            if dy == 0:  # horizontal edge
-                ya = y2
-                xa = dx*p+x1
-            else:
-                theta = numpy.arctan2(dy, dx)
-                xa = p*d*numpy.cos(theta)+x1
-                ya = p*d*numpy.sin(theta)+y1
-
-            a_pos.append(((xa, ya), (x2, y2)))
-
-        arrow_collection = LineCollection(a_pos,
-                                colors=arrow_colors,
-                                linewidths=[4*ww for ww in lw],
-                                antialiaseds=(1,),
-                                transOffset = ax.transData,
-                                )
-
-        arrow_collection.set_zorder(1)  # edges go behind nodes
-        arrow_collection.set_label(label)
-        ax.add_collection(arrow_collection)
+            plt.arrow(x1, y1, dx, dy, axes=ax)
 
     # update view
     minx = numpy.amin(numpy.ravel(edge_pos[:, :, 0]))
